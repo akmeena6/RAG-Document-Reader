@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  streamlit:
+    image: doc-ai-assistant
+    container_name: streamlit_pdf_extractor
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./app:/app
+    command: streamlit run app.py --server.runOnSave true --server.address 0.0.0.0

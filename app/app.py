@@ -1,4 +1,7 @@
+import os
+
 import streamlit as st
+from dotenv import load_dotenv
 from text_utils import convert_text_to_chunks, extract_text_from_pdf, text_cleaning
 
 st.set_page_config(page_title="PDF Reader", layout="wide")
@@ -20,3 +23,5 @@ if uploaded_file is not None:
         for i, chunk in enumerate(chunks, start=1):
             st.markdown(f"**Chunk {i}**")
             st.write(chunk)
+
+        load_dotenv()

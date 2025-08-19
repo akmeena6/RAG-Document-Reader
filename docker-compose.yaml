@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   streamlit:
-    image: doc-ai-assistant
+    image : doc-ai-assistant
     container_name: streamlit_pdf_extractor
     ports:
       - "8501:8501"

@@ -1,6 +1,9 @@
 # Use official Python image
 FROM python:3.10-slim
 
+# Copy .env file
+COPY .env ./
+
 # Set working directory
 WORKDIR /app
 
@@ -10,8 +13,8 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all project files into the container
-COPY . .
+#app director(host -> container)
+COPY app ./app
 
 # Expose Streamlit default port
 EXPOSE 8501

@@ -3,3 +3,5 @@ langchain
 pypdf
 chromadb
 openai
+python-dotenv
+sentence-transformers

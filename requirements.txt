@@ -5,3 +5,4 @@ chromadb
 openai
 python-dotenv
 sentence-transformers
+google-generativeai

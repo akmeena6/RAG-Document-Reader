@@ -1,6 +1,7 @@
 import os
 
 import streamlit as st
+from llm_utils import generate_llm_answer
 from text_utils import convert_text_to_chunks, extract_text_from_pdf, text_cleaning
 from vectordb_utils import add_chunks_to_collection, semantic_search
 
@@ -37,18 +38,22 @@ if uploaded_file is not None:
         )
 
         if user_query:
-            # Show a spinner while the search is in progress
             with st.spinner("Searching for relevant chunks..."):
-                # Perform the semantic search
-                results = semantic_search(user_query, topk_results=3)
+                context_chunks = semantic_search(user_query, topk_results=3)
 
-            st.subheader("Search Results")
+            if context_chunks:
+                # Generate the answer using the LLM
+                with st.spinner("Generating answer..."):
+                    llm_answer = generate_llm_answer(user_query, context_chunks)
 
-            if results:
-                # Use an expander to neatly display the retrieved chunks
-                with st.expander("View the top 3 most relevant chunks 📄"):
-                    for chunk in results:
-                        # Using st.info provides a nicely formatted box for each chunk
+                # Display the final answer
+                st.subheader("Answer:")
+                st.success(llm_answer)
+
+                # Use an expander to show the context chunks used for the answer
+                with st.expander("View the context chunks used for this answer 📄"):
+                    for chunk in context_chunks:
                         st.info(chunk)
+
             else:
                 st.warning("No relevant chunks found for your query.")

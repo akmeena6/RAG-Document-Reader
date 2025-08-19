@@ -1,9 +1,6 @@
 # Use official Python image
 FROM python:3.10-slim
 
-# Copy .env file
-COPY .env ./
-
 # Set working directory
 WORKDIR /app
 

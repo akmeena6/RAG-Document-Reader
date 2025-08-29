@@ -6,3 +6,7 @@ openai
 python-dotenv
 sentence-transformers
 google-generativeai
+tiktoken
+pymongo
+bcrypt
+pyjwt

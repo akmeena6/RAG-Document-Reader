@@ -50,7 +50,11 @@ def signup_form():
         st.subheader("Create a new account")
         new_username = st.text_input("New Username")
         new_password = st.text_input("New Password", type="password")
+        confirm_password = st.text_input("Confirm Password", type="password")
         if st.form_submit_button("Sign Up"):
+            if new_password != confirm_password:
+                st.error("Passwords do not match.")
+                return
             success, message = create_user(new_username, new_password)
             if success:
                 st.success(message + " You can now log in.")
@@ -70,8 +74,6 @@ def main_app_content():
             normalized_text = text_cleaning(extracted_text)
             chunks = convert_text_to_chunks(normalized_text)
             st.success("✅ Extraction complete!")
-            st.text_area("Extracted Text", extracted_text, height=400)
-            st.text_area("Normalized Text", normalized_text, height=400)
 
         if st.button("Embed the Chunks and add to ChromaDB"):
             with st.spinner("Embedding and Adding chunks to ChromaDB..."):
@@ -80,7 +82,7 @@ def main_app_content():
 
         user_query = st.text_input(
             "Your question:",
-            placeholder="What is the main topic of the document?",
+            placeholder="Ask a question about the uploaded PDF...",
             key="search_input",
         )
 
@@ -107,7 +109,7 @@ def logout():
     st.session_state.token = None
     st.session_state.username = None
     st.info("You have been logged out.")
-    st.rerun()
+    # st.rerun()
 
 
 # --- Conditional Rendering ---

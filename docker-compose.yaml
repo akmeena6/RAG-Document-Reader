@@ -11,7 +11,7 @@ services:
     volumes:
       - ./app:/app
     command: streamlit run app.py --server.runOnSave true --server.address 0.0.0.0
-  mongo:
+  mongodb:
     image: mongo:latest
     container_name: mongodb
     ports:

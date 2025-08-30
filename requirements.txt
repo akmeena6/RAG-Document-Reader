@@ -10,3 +10,6 @@ tiktoken
 pymongo
 bcrypt
 pyjwt
+PyMuPDF
+pytesseract
+Pillow

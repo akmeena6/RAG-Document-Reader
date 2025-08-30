@@ -69,11 +69,22 @@ def main_app_content():
 
     uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
     if uploaded_file is not None:
-        with st.spinner("Extracting text..."):
+        progress_text = "File processing is in progress. Please wait."
+        my_bar = st.progress(0, text=progress_text)
+
+        with st.spinner(progress_text):
             extracted_text = extract_text_from_pdf(uploaded_file)
+            st.text_area("Extracted Text", extracted_text, height=200)
+            my_bar.progress(33, text="Text extracted successfully!")
+
             normalized_text = text_cleaning(extracted_text)
+            my_bar.progress(66, text="Text cleaned and normalized!")
+
             chunks = convert_text_to_chunks(normalized_text)
-            st.success("✅ Extraction complete!")
+            my_bar.progress(100, text="Text chunked successfully!")
+
+        my_bar.empty()
+        st.success("PDF processed successfully!")
 
         if st.button("Embed the Chunks and add to ChromaDB"):
             with st.spinner("Embedding and Adding chunks to ChromaDB..."):

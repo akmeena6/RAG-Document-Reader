@@ -4,7 +4,14 @@ import jwt
 import streamlit as st
 from llm_utils import generate_llm_answer
 from text_utils import convert_text_to_chunks, extract_text_from_pdf, text_cleaning
-from user_db_utils import create_jwt_token, create_user, verify_jwt_token, verify_user
+from user_db_utils import (
+    create_jwt_token,
+    create_user,
+    get_history,
+    save_chat,
+    verify_jwt_token,
+    verify_user,
+)
 from vectordb_utils import add_chunks_to_collection, semantic_search
 
 st.set_page_config(page_title="PDF Reader", layout="wide")
@@ -65,7 +72,14 @@ def signup_form():
 def main_app_content():
     # The main content of the application after a successful login.
     st.write(f"Welcome, {st.session_state.username}!")
-    st.sidebar.button("Logout", on_click=logout)
+    if st.sidebar.button("Logout"):
+        logout()
+
+    st.sidebar.subheader("Recent History")
+    hist = get_history(st.session_state.username)
+    for h in hist:
+        with st.sidebar.expander(f"Q: {h['query'][:20]}..."):
+            st.write(h["resp"])
 
     uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
     if uploaded_file is not None:
@@ -105,6 +119,8 @@ def main_app_content():
                 with st.spinner("Generating answer..."):
                     llm_answer = generate_llm_answer(user_query, context_chunks)
 
+                save_chat(st.session_state.username, user_query, llm_answer)
+                st.write(llm_answer)
                 st.subheader("Answer:")
                 st.success(llm_answer)
 
@@ -120,7 +136,7 @@ def logout():
     st.session_state.token = None
     st.session_state.username = None
     st.info("You have been logged out.")
-    # st.rerun()
+    st.rerun()
 
 
 # --- Conditional Rendering ---

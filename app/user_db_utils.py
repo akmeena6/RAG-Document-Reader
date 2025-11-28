@@ -8,19 +8,19 @@ from pymongo.errors import ConnectionFailure
 
 # MongoDB Connection
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongodb:27017/")
+# JWT Secret from environment variables
+JWT_SECRET = os.getenv("JWT_SECRET", "your-super-secret-key")
 
 try:
     client = pymongo.MongoClient(MONGO_URI)
     db = client["rag_users"]
     users_collection = db["users"]
+    chats_collection = db["chats"]
     client.admin.command("ping")
     print("Successfully connected to MongoDB!")
 except ConnectionFailure as e:
     print(f"Failed to connect to MongoDB: {e}")
     client = None
-
-# JWT Secret from environment variables
-JWT_SECRET = os.getenv("JWT_SECRET", "your-super-secret-key")
 
 
 def hash_password(password):
@@ -70,3 +70,19 @@ def verify_jwt_token(token):
         return "Signature expired. Please log in again."
     except jwt.InvalidTokenError:
         return "Invalid token. Please log in again."
+
+
+def save_chat(username, query, response):
+    log = {
+        "user": username,
+        "query": query,
+        "resp": response,
+        "timestamp": datetime.now(timezone.utc),
+    }
+    chats_collection.insert_one(log)
+
+
+def get_history(username, limit=5):
+    return list(
+        chats_collection.find({"user": username}).sort("timestamp", -1).limit(limit)
+    )

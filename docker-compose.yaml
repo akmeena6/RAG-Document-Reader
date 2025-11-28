@@ -1,20 +1,29 @@
 version: "3.8"
 
 services:
-  streamlit:
-    image : doc-ai-assistant
-    container_name: streamlit_pdf_extractor
+  streamlit_app:
+    # Build context is the current directory (root)
+    build: .
+    container_name: pdf_chatbot_app
     ports:
       - "8501:8501"
     env_file:
       - .env
+    environment:
+      # Connects to the mongodb service defined below
+      - MONGO_URI=mongodb://mongodb_service:27017/
+    depends_on:
+      - mongodb_service
     volumes:
-      - ./app:/app
-    command: streamlit run app.py --server.runOnSave true --server.address 0.0.0.0
-  mongodb:
+      # Maps your entire root folder to the container workdir
+      # This allows you to edit files in 'app/' locally and see changes instantly
+      - .:/project_root
+
+  mongodb_service:
     image: mongo:latest
-    container_name: mongodb
+    container_name: mongodb_container
     ports:
       - "27017:27017"
     volumes:
+      # Persists DB data in a local folder named 'mongo_data'
       - ./mongo_data:/data/db
